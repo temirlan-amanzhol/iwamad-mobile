@@ -1,8 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
+import { Link } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
+// app/index.tsx is the "/" route – the Home screen
+export default function HomeScreen() {
   // Same idea as the Week 3 counter: state + a handler, only the building blocks are native
   const [likes, setLikes] = useState(0);
 
@@ -20,6 +22,16 @@ export default function App() {
       >
         <Text style={styles.buttonText}>Like</Text>
       </Pressable>
+
+      {/* asChild: the Link gives its navigation to the Pressable instead of drawing its own text */}
+      <Link href="/events" asChild>
+        <Pressable
+          accessibilityRole="button"
+          style={({ pressed }) => [styles.button, styles.secondary, pressed && styles.buttonPressed]}
+        >
+          <Text style={[styles.buttonText, styles.secondaryText]}>Events</Text>
+        </Pressable>
+      </Link>
 
       <StatusBar style="auto" />
     </View>
@@ -55,9 +67,14 @@ const styles = StyleSheet.create({
     minWidth: 120,
     paddingHorizontal: 16,
     borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#1d4ed8',
     backgroundColor: '#1d4ed8',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  secondary: {
+    backgroundColor: '#ffffff',
   },
   buttonPressed: {
     opacity: 0.8,
@@ -66,5 +83,8 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  secondaryText: {
+    color: '#1d4ed8',
   },
 });
