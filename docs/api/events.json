@@ -1,0 +1,6 @@
+[
+  { "id": 1, "title": "React study night", "date": "2026-10-22", "place": "Room 302", "seats": 20 },
+  { "id": 2, "title": "Reels shooting workshop", "date": "2026-11-05", "place": "Media lab", "seats": 12 },
+  { "id": 3, "title": "Meta ads for small business", "date": "2026-11-12", "place": "Room 118", "seats": 30 },
+  { "id": 4, "title": "Portfolio review: bring your site", "date": "2026-11-19", "place": "Library, 2nd floor", "seats": 3 }
+]

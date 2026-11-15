@@ -2,21 +2,32 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import EventRow from '../../src/components/EventRow';
-import { events } from '../../src/data/events';
+import { ErrorView, LoadingView } from '../../src/components/QueryStatus';
+import { useEvents } from '../../src/hooks/useEvents';
 
 // app/events/index.tsx is the "/events" route
 export default function EventsScreen() {
   const [savedIds, setSavedIds] = useState<number[]>([]);
   const [query, setQuery] = useState('');
-
-  // Computed on every render from the text – not kept in a second useState
-  const search = query.trim().toLowerCase();
-  const visibleEvents = events.filter((event) => event.title.toLowerCase().includes(search));
+  // The list comes from the server through the shared ['events'] cache
+  const { data, isPending, isError, error, refetch, isRefetching } = useEvents();
 
   function toggleSaved(id: number) {
     // Always a new array: [...ids, id] to add, filter to remove – never push or splice
     setSavedIds((ids) => (ids.includes(id) ? ids.filter((savedId) => savedId !== id) : [...ids, id]));
   }
+
+  if (isPending) {
+    return <LoadingView />;
+  }
+
+  if (isError) {
+    return <ErrorView message={error.message} onRetry={() => refetch()} />;
+  }
+
+  // Computed on every render from the text – not kept in a second useState
+  const search = query.trim().toLowerCase();
+  const visibleEvents = data.filter((event) => event.title.toLowerCase().includes(search));
 
   return (
     <View style={styles.container}>
@@ -44,6 +55,9 @@ export default function EventsScreen() {
             onLongPress={() => toggleSaved(item.id)}
           />
         )}
+        // Pull to refresh: the spinner shows while the cache is fetched again
+        refreshing={isRefetching}
+        onRefresh={() => refetch()}
         ListEmptyComponent={<Text style={styles.empty}>No events match</Text>}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.list}

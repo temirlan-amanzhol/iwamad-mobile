@@ -1,12 +1,24 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-import { events } from '../../src/data/events';
+import { ErrorView, LoadingView } from '../../src/components/QueryStatus';
+import { useEvents } from '../../src/hooks/useEvents';
 
 // app/events/[id].tsx is the "/events/:id" route – [id] is the changing part
 export default function EventScreen() {
   // Like useParams on the web: the id arrives as a string, so convert it before comparing
   const { id } = useLocalSearchParams<{ id: string }>();
-  const event = events.find((item) => item.id === Number(id));
+  // Same hook, same ['events'] cache as the list – coming from the list, nothing is fetched again
+  const { data, isPending, isError, error, refetch } = useEvents();
+
+  if (isPending) {
+    return <LoadingView />;
+  }
+
+  if (isError) {
+    return <ErrorView message={error.message} onRetry={() => refetch()} />;
+  }
+
+  const event = data.find((item) => item.id === Number(id));
 
   if (!event) {
     return (
