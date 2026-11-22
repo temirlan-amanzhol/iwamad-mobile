@@ -4,18 +4,15 @@ import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
 import EventRow from '../../src/components/EventRow';
 import { ErrorView, LoadingView } from '../../src/components/QueryStatus';
 import { useEvents } from '../../src/hooks/useEvents';
+import { useSavedIds } from '../../src/hooks/useSavedIds';
 
 // app/events/index.tsx is the "/events" route
 export default function EventsScreen() {
-  const [savedIds, setSavedIds] = useState<number[]>([]);
+  // Saved ids now live in AsyncStorage, so they survive closing the app
+  const { savedIds, toggleSaved } = useSavedIds();
   const [query, setQuery] = useState('');
   // The list comes from the server through the shared ['events'] cache
   const { data, isPending, isError, error, refetch, isRefetching } = useEvents();
-
-  function toggleSaved(id: number) {
-    // Always a new array: [...ids, id] to add, filter to remove – never push or splice
-    setSavedIds((ids) => (ids.includes(id) ? ids.filter((savedId) => savedId !== id) : [...ids, id]));
-  }
 
   if (isPending) {
     return <LoadingView />;
@@ -31,7 +28,7 @@ export default function EventsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.hint}>Long-press an event to save it. Saved: {savedIds.length}</Text>
+      <Text style={styles.hint}>Swipe or long-press an event to save it. Saved: {savedIds.length}</Text>
 
       {/* Controlled input: value comes from state, onChangeText writes it back */}
       <TextInput
@@ -52,7 +49,7 @@ export default function EventsScreen() {
             event={item}
             saved={savedIds.includes(item.id)}
             onPress={() => router.push(`/events/${item.id}`)}
-            onLongPress={() => toggleSaved(item.id)}
+            onToggleSaved={() => toggleSaved(item.id)}
           />
         )}
         // Pull to refresh: the spinner shows while the cache is fetched again
