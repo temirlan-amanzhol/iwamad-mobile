@@ -28,20 +28,25 @@ export default function EventsScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.hint}>Swipe or long-press an event to save it. Saved: {savedIds.length}</Text>
-
-      {/* Controlled input: value comes from state, onChangeText writes it back */}
-      <TextInput
-        value={query}
-        onChangeText={setQuery}
-        placeholder="Search events"
-        accessibilityLabel="Search events"
-        autoCorrect={false}
-        style={styles.search}
-      />
-
       {/* FlatList draws only the rows on screen – unlike a ScrollView with .map() */}
       <FlatList
+        // On iOS the header can float over the screen; "automatic" moves the content below it
+        contentInsetAdjustmentBehavior="automatic"
+        // The hint and the search scroll with the list, so they are never hidden under the header
+        ListHeaderComponent={
+          <View style={styles.header}>
+            <Text style={styles.hint}>Swipe or long-press an event to save it. Saved: {savedIds.length}</Text>
+            {/* Controlled input: value comes from state, onChangeText writes it back */}
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              placeholder="Search events"
+              accessibilityLabel="Search events"
+              autoCorrect={false}
+              style={styles.search}
+            />
+          </View>
+        }
         data={visibleEvents}
         keyExtractor={(e) => String(e.id)}
         renderItem={({ item }) => (
@@ -67,17 +72,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 16,
+  },
+  header: {
+    gap: 16,
   },
   hint: {
-    marginHorizontal: 16,
     fontSize: 14,
     color: '#6b7280',
   },
   search: {
     minHeight: 44,
-    margin: 16,
-    marginBottom: 0,
     paddingHorizontal: 12,
     borderWidth: 1,
     borderColor: '#d1d5db',
