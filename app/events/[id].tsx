@@ -1,5 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+import HolidayNote from '../../src/components/HolidayNote';
 import { ErrorView, LoadingView } from '../../src/components/QueryStatus';
 import { useEvents } from '../../src/hooks/useEvents';
 
@@ -38,6 +39,7 @@ export default function EventScreen() {
       <Text style={styles.text}>
         {event.date} · {event.place}
       </Text>
+      <HolidayNote date={event.date} />
       <Text style={styles.text}>{event.seats} seats</Text>
     </View>
   );
